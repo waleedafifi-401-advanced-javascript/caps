@@ -1,21 +1,18 @@
 'use strict';
 
 require('dotenv').config();
-const net = require('net');
+const io = require('socket.io-client');
 const faker = require('faker');
-const client = new net.Socket();
 const storeName = process.env.STORE_NAME || 'Cacti Store';
 
 const host = process.env.HOST || 'localhost';
 const port = process.env.PORT || 3000;
 
-client.connect(port, host, () => {});
+const capsNameSpace = io.connect(`http://${host}:${port}/caps`);
 
-client.on('data', (buffer) => {
-    const orderEvent = JSON.parse(buffer.toString());
-    if (orderEvent.event === 'delivered') {
-        console.log(`VENDOR: Thank you for delivering ${orderEvent.payload.orderID}`);
-    }
+capsNameSpace.emit('join', storeName);
+capsNameSpace.on('delivered', payload => {
+    console.log(`VENDOR: Thank you for delivering ${payload.orderID}`);
 });
 
 function start() {
@@ -26,13 +23,10 @@ function start() {
           customer: faker.fake('{{name.firstName}} {{name.lastName}}'),
           address: faker.address.streetAddress(),
         };
-        const event = JSON.stringify({
-            event: 'pickup',
-            time: new Date().toUTCString(),
-            payload: fakeOrder
-        });
-        client.write(event);
+        capsNameSpace.emit('pickup', fakeOrder);
       }, 5000);
 }
 
 start();
+
+module.exports = { start: () => start() };
