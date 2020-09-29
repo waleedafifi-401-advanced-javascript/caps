@@ -1,6 +1,7 @@
 # caps
 
-In Phase 2, we’ll be spreading the functionality of our CAPS application into multiple applications, so that users on different computers and connections can continue to communicate in real time as packages are prepared, picked up, and delivered.
+CAPS Phase 3: Continue working on a multi-day build of our delivery tracking system, moving event management to socket.io
+In this phase, we’ll be moving away from using TCP for our event network and switching instead in to using socket.io, which takes on some of the complexity we had to manage ourselves, and also works equally well between servers and with websites.
 
 CAPS will simulate a delivery service where vendors (such a Cacti shops) will ship products using our delivery service and when our drivers deliver them, be notified that their customers received what they purchased.
 
@@ -20,6 +21,9 @@ CAPS will simulate a delivery service where vendors (such a Cacti shops) will sh
 - `faker`
 - `jest`
 - `dotenv`
+- `socket.io`
+- `socket.io-client`
+- `express`
 
 #### How to initialize/run your application (where applicable)
 1. first start the cap server
@@ -112,9 +116,23 @@ VENDOR: Thank you for delivering 9c4a93e1-a8d8-4a12-ae4d-bcaf4830564c
 VENDOR: Thank you for delivering 001216c2-84ea-4515-94c0-47605915638e
 ```
 
+##### To add a _pickup_ using express
+1. start express server
+   - `node server.js`
+2. Go to _Postman_ and select post method and the link `http://localhost:3001/pickup`
+   - add the json parameters as below
+   ```
+   {
+    "store": "1-206-flowers",
+    "orderID": "65c17431-d1f5-432c-890f-d81788e38c1c",
+    "customer": "Juston Reichel",
+    "address": "Lake Al, OK"
+   }
+   ```
+
 #### Tests
 - `npm run test`
 
 #### UML
 
-![UML](./assets/uml2.jpg)
+![UML](./assets/uml3.jpg)

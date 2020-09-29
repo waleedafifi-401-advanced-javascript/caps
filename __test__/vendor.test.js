@@ -1,28 +1,10 @@
-const vendor = require('../vendor');
-const emitter = require('../events');
+'use strict';
 
-jest.useFakeTimers();
+const vendor = require('../vendor/vendor');
 
-it('should receive delivery politely', () => {
-  console.log = jest.fn();
-  emitter.emit('delivered', { orderID : '4dfa2734-00b5-11eb-adc1-0242ac120002' });
-  expect(console.log).toHaveBeenCalledWith('VENDOR: Thank you for delivering 4dfa2734-00b5-11eb-adc1-0242ac120002');
-});
-
-it('should emit order', () => {
-
-  const callback = jest.fn();
-
-  emitter.on('pickup', callback);
-
-  expect(callback).not.toBeCalled();
-
-  vendor.start();
-
-  jest.runOnlyPendingTimers();
-
-  // expect(callback).toBeCalledWith(expect.objectContaining({store:'Cacti Store'}));
-
-  expect(callback).toHaveBeenCalledTimes(1);
-
+describe('Vendor handler', () => {
+  it('call start vendor handler', () => {
+    let start = vendor.start;
+    expect(start).toBeTruthy();
+  });
 });

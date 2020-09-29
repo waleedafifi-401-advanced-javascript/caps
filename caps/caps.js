@@ -1,38 +1,35 @@
 'use strict';
 
 require('dotenv').config();
-const faker = require('faker');
-
-const net = require('net');
 const port = process.env.PORT || 3000;
-const server = net.createServer();
 
-server.listen(port, () => console.log(`Listening on port ${port}`));
+const io = require('socket.io')(port);
+const capsNameSpace = io.of('/caps');
 
-const socketPool = {};
+capsNameSpace.on('connection', socket => {
+  console.log('Connected to socket', socket.id);
 
-server.on('connection', (socket) => {
-  const id = `socket-${faker.random.uuid()}`;
-  socketPool[id] = socket;
-  console.log('Socket Conected:', socket);
+  socket.on('join', room => socket.join(room));
 
-  socket.on('data', buffer => {
-    const eventInfo = JSON.parse(buffer.toString());
-    if(eventInfo.payload && eventInfo.event) {
-      console.log('EVENT', eventInfo);
-      broadcastEvent(eventInfo);
-    }
-  });
-
-  socket.on('error', err => console.log('SOCKET ERROR', err));
-  socket.on('end', end => delete socketPool[id]);
+  socket.on('pickup', eventHandler('pickup'));
+  socket.on('in-transit', eventHandler('in-transit'));
+  socket.on('delivered', eventHandler('delivered'));
 });
 
-function broadcastEvent(eventInfo){
-  const event = JSON.stringify(eventInfo);
-  for(let socket in socketPool) {
-    socketPool[socket].write(event);
-  }
+function eventHandler(event) {
+  return payload => {
+    if (event !== 'pickup') {
+      capsNameSpace.to(payload.store);
+    }
+
+    capsNameSpace.emit(event, payload);
+
+    console.log('Event', {
+      event,
+      time: new Date().toLocaleTimeString(),
+      payload,
+    });
+  };
 }
 
-server.on('error', err => console.log('SERVER ERROR', err));
+module.exports.eventHandler = eventHandler;

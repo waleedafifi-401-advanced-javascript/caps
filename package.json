@@ -2,7 +2,7 @@
   "name": "caps",
   "version": "1.0.0",
   "description": "CAPS will simulate a delivery service where vendors (such a flower shops) will ship products using our delivery service and when our drivers deliver them, be notified that their customers received what they purchased.",
-  "main": "index.js",
+  "main": "caps/caps.js",
   "scripts": {
     "test": "jest --verbose --coverage",
     "lint": "eslint .",
@@ -21,7 +21,9 @@
   "homepage": "https://github.com/waleedafifi-401-advanced-javascript/caps#readme",
   "dependencies": {
     "dotenv": "^8.2.0",
+    "express": "^4.17.1",
     "faker": "^5.1.0",
-    "jest": "^26.4.2"
+    "jest": "^26.4.2",
+    "socket.io-client": "^2.3.0"
   }
 }
